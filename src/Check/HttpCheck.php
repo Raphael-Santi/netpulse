@@ -46,13 +46,26 @@ final class HttpCheck implements Check
         $microseconds = (int) round(($target->timeout - $seconds) * 1_000_000);
         stream_set_timeout($client, $seconds, $microseconds);
 
+        $hostHeader = $target->host;
+
+        // RFC 9110: the Host header must include the port when it is not
+        // the default one for the scheme — virtual hosts on non-standard
+        // ports would otherwise route the request to the wrong site.
+        if ($port !== ($target->tls ? self::DEFAULT_HTTPS_PORT : self::DEFAULT_HTTP_PORT)) {
+            $hostHeader .= ':' . $port;
+        }
+
         $request = sprintf(
             "GET %s HTTP/1.1\r\nHost: %s\r\nUser-Agent: netpulse/1.0\r\nConnection: close\r\n\r\n",
             $target->path,
-            $target->host,
+            $hostHeader,
         );
 
-        fwrite($client, $request);
+        if (fwrite($client, $request) === false) {
+            fclose($client);
+
+            return CheckResult::down('failed to send request');
+        }
 
         $statusLine = fgets($client);
         $meta = stream_get_meta_data($client);
