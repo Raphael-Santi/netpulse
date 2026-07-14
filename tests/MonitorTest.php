@@ -53,6 +53,7 @@ final class MonitorTest extends TestCase
             checks: new CheckFactory(),
             storage: $storage,
             detector: new IncidentDetector($storage, $notifier, failureThreshold: 1),
+            historyDays: 30,
         );
 
         $outcomes = $monitor->runOnce();

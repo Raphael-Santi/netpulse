@@ -62,6 +62,21 @@ final class PdoStorage
     }
 
     /**
+     * Deletes results older than the cutoff. The monitor calls this on
+     * every cycle, so the history table cannot grow without bound in a
+     * long-running daemon.
+     *
+     * @return int number of deleted rows
+     */
+    public function purgeResultsBefore(DateTimeImmutable $cutoff): int
+    {
+        $statement = $this->prepare('DELETE FROM check_results WHERE checked_at < :cutoff');
+        $statement->execute(['cutoff' => $cutoff->format(self::DATETIME_FORMAT)]);
+
+        return $statement->rowCount();
+    }
+
+    /**
      * Statuses of the most recent results for a target, newest first.
      *
      * @return list<CheckStatus>
@@ -188,6 +203,7 @@ final class PdoStorage
                     checked_at DATETIME NOT NULL
                 )',
                 'CREATE INDEX IF NOT EXISTS idx_results_target ON check_results (target_name, id)',
+                'CREATE INDEX IF NOT EXISTS idx_results_checked_at ON check_results (checked_at)',
                 'CREATE TABLE IF NOT EXISTS incidents (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     target_name VARCHAR(100) NOT NULL,
@@ -205,7 +221,8 @@ final class PdoStorage
                     latency_ms DOUBLE PRECISION NULL,
                     error TEXT NULL,
                     checked_at DATETIME NOT NULL,
-                    INDEX idx_results_target (target_name, id)
+                    INDEX idx_results_target (target_name, id),
+                    INDEX idx_results_checked_at (checked_at)
                 ) ENGINE=InnoDB',
                 'CREATE TABLE IF NOT EXISTS incidents (
                     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

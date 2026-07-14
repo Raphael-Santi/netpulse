@@ -32,6 +32,7 @@ final class ConfigLoaderTest extends TestCase
                 'storage' => ['dsn' => 'sqlite::memory:'],
                 'failure_threshold' => 2,
                 'interval' => 30,
+                'history_days' => 7,
                 'telegram' => ['token' => 'bot-token', 'chat_id' => '42'],
                 'targets' => [
                     ['name' => 'db', 'type' => 'tcp', 'host' => '127.0.0.1', 'port' => 3306],
@@ -46,6 +47,7 @@ final class ConfigLoaderTest extends TestCase
         self::assertSame('sqlite::memory:', $config->dsn);
         self::assertSame(2, $config->failureThreshold);
         self::assertSame(30, $config->intervalSeconds);
+        self::assertSame(7, $config->historyDays);
         self::assertSame('bot-token', $config->telegramToken);
         self::assertSame('42', $config->telegramChatId);
 
@@ -72,6 +74,7 @@ final class ConfigLoaderTest extends TestCase
 
         self::assertSame(3, $config->failureThreshold);
         self::assertSame(60, $config->intervalSeconds);
+        self::assertSame(30, $config->historyDays);
         self::assertStringContainsString('var/netpulse.db', $config->dsn);
         self::assertNull($config->telegramToken);
         self::assertSame(3.0, $config->targets[0]->timeout);

@@ -66,7 +66,7 @@ final class Application
             : new StderrNotifier();
 
         $detector = new IncidentDetector($storage, $notifier, $config->failureThreshold);
-        $monitor = new Monitor($config->targets, new CheckFactory(), $storage, $detector);
+        $monitor = new Monitor($config->targets, new CheckFactory(), $storage, $detector, $config->historyDays);
 
         return match ($command) {
             'check' => $this->runChecks($monitor),

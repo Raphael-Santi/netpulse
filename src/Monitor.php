@@ -26,6 +26,7 @@ final class Monitor
         private readonly CheckFactory $checks,
         private readonly PdoStorage $storage,
         private readonly IncidentDetector $detector,
+        private readonly int $historyDays,
     ) {
     }
 
@@ -45,6 +46,12 @@ final class Monitor
 
             $outcomes[] = new CheckOutcome($target, $result);
         }
+
+        // Retention: prune raw history beyond the configured window so a
+        // long-running daemon never grows the table without bound.
+        $this->storage->purgeResultsBefore(
+            (new DateTimeImmutable())->modify(sprintf('-%d days', $this->historyDays)),
+        );
 
         return $outcomes;
     }

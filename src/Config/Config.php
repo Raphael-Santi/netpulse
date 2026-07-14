@@ -18,6 +18,7 @@ final readonly class Config
         public ?string $dbPassword,
         public int $failureThreshold,
         public int $intervalSeconds,
+        public int $historyDays,
         public ?string $telegramToken,
         public ?string $telegramChatId,
     ) {

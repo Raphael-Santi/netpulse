@@ -18,6 +18,7 @@ final class ConfigLoader
 {
     private const int DEFAULT_FAILURE_THRESHOLD = 3;
     private const int DEFAULT_INTERVAL_SECONDS = 60;
+    private const int DEFAULT_HISTORY_DAYS = 30;
     private const float DEFAULT_TIMEOUT_SECONDS = 3.0;
 
     public static function load(string $path): Config
@@ -53,9 +54,12 @@ final class ConfigLoader
 
         $failureThreshold = self::intValue($raw, 'failure_threshold') ?? self::DEFAULT_FAILURE_THRESHOLD;
         $intervalSeconds = self::intValue($raw, 'interval') ?? self::DEFAULT_INTERVAL_SECONDS;
+        $historyDays = self::intValue($raw, 'history_days') ?? self::DEFAULT_HISTORY_DAYS;
 
-        if ($failureThreshold < 1 || $intervalSeconds < 1) {
-            throw new InvalidArgumentException('"failure_threshold" and "interval" must be positive integers.');
+        if ($failureThreshold < 1 || $intervalSeconds < 1 || $historyDays < 1) {
+            throw new InvalidArgumentException(
+                '"failure_threshold", "interval" and "history_days" must be positive integers.',
+            );
         }
 
         return new Config(
@@ -65,6 +69,7 @@ final class ConfigLoader
             dbPassword: self::emptyToNull(self::stringValue($storage, 'password')),
             failureThreshold: $failureThreshold,
             intervalSeconds: $intervalSeconds,
+            historyDays: $historyDays,
             telegramToken: self::emptyToNull(self::stringValue($telegram, 'token')),
             telegramChatId: self::emptyToNull(self::stringValue($telegram, 'chat_id')),
         );

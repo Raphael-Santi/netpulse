@@ -17,6 +17,10 @@ return [
     // Consecutive failures required before an incident is opened.
     'failure_threshold' => 3,
 
+    // Keep raw check results for this many days; older rows are purged
+    // automatically on every monitoring cycle.
+    'history_days' => 30,
+
     // Pause between rounds in watch mode, seconds.
     'interval' => 60,
 

@@ -103,6 +103,19 @@ final class PdoStorageTest extends TestCase
         self::assertSame(45, $incident->downtimeMinutes($openedAt->modify('+45 minutes')));
     }
 
+    public function testPurgeDeletesOnlyOldResults(): void
+    {
+        $target = self::target();
+
+        $this->storage->saveResult($target, CheckResult::up(1.0), new DateTimeImmutable('2026-06-01 00:00:00'));
+        $this->storage->saveResult($target, CheckResult::up(1.0), new DateTimeImmutable('2026-07-10 00:00:00'));
+
+        $deleted = $this->storage->purgeResultsBefore(new DateTimeImmutable('2026-07-01 00:00:00'));
+
+        self::assertSame(1, $deleted);
+        self::assertCount(1, $this->storage->lastStatuses('web', 10));
+    }
+
     private static function target(): Target
     {
         return new Target(name: 'web', type: CheckType::Http, host: 'example.com');
