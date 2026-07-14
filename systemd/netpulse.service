@@ -1,0 +1,26 @@
+[Unit]
+Description=NetPulse network availability monitor
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/php /opt/netpulse/bin/netpulse watch --config=/etc/netpulse/targets.php
+Restart=on-failure
+RestartSec=5
+
+# Run as an unprivileged dynamic user. /var/lib/netpulse is created and
+# owned automatically (StateDirectory) — point the SQLite DSN there:
+# 'sqlite:/var/lib/netpulse/netpulse.db'.
+DynamicUser=yes
+StateDirectory=netpulse
+
+# Hardening: the monitor needs network access and its state directory,
+# nothing else.
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target
