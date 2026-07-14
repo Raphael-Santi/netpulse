@@ -1,0 +1,4 @@
+/vendor/
+/config/targets.php
+/.php-cs-fixer.cache
+/.phpunit.cache/

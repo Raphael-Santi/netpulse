@@ -1,0 +1,37 @@
+{
+    "name": "raphael-santi/netpulse",
+    "description": "Lightweight network availability monitor: TCP, HTTP, DNS and ICMP checks with incident tracking and Telegram alerts. Pure PHP 8.3, zero runtime dependencies.",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": "^8.3",
+        "ext-pdo": "*"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.64",
+        "phpstan/phpstan": "^2.0",
+        "phpunit/phpunit": "^12.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "NetPulse\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "NetPulse\\Tests\\": "tests/"
+        }
+    },
+    "bin": [
+        "bin/netpulse"
+    ],
+    "scripts": {
+        "cs": "php-cs-fixer fix --dry-run --diff",
+        "cs:fix": "php-cs-fixer fix",
+        "stan": "phpstan analyse --no-progress",
+        "test": "phpunit"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
